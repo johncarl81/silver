@@ -16,10 +16,7 @@ import javax.inject.Inject;
 import javax.inject.Provider;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.TypeElement;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 /**
  * @author John Ericksen
@@ -47,6 +44,26 @@ public class SilverWorker extends AbstractCompletionTransactionWorker<Provider<A
             JDefinedClass silverimpl = generationUtil.defineClass(ClassNamer.className(implementation).append(SilverUtil.IMPL_EXT).build());
 
             silverimpl._implements(generationUtil.ref(implementation));
+
+
+            // Builds the following static method:
+
+            // private static Set<Class> buildSet(Class... input) {
+            //     Set<java.lang.Class> set = new HashSet<Class>();
+            //     Collections.addAll(set, input);
+            //     return Collections.unmodifiableSet(set);
+            // }
+
+            JClass setRef = generationUtil.ref(Set.class).narrow(Class.class);
+            JClass hashsetRef = generationUtil.ref(HashSet.class).narrow(Class.class);
+
+            JMethod buildSet = silverimpl.method(JMod.PRIVATE | JMod.STATIC, setRef, "buildSet");
+            JVar inputVar = buildSet.varParam(Class.class, namer.generateName(Class.class));
+            JBlock buildSetBody = buildSet.body();
+
+            JVar setVar = buildSetBody.decl(setRef, namer.generateName(setRef), JExpr._new(hashsetRef));
+            buildSetBody.staticInvoke(generationUtil.ref(Collections.class), "addAll").arg(setVar).arg(inputVar);
+            buildSetBody._return(generationUtil.ref(Collections.class).staticInvoke("unmodifiableSet").arg(setVar));
 
             for (ASTMethod astMethod : implementation.getMethods()) {
 
@@ -122,16 +139,13 @@ public class SilverWorker extends AbstractCompletionTransactionWorker<Provider<A
             }
         }
 
-        JClass arraysRef = generationUtil.ref(Arrays.class);
 
-        JInvocation collectionsInvocation = generationUtil.ref(Collections.class).staticInvoke("unmodifiableList");
-        JInvocation asListInvocation = arraysRef.staticInvoke("asList");
-        collectionsInvocation.arg(asListInvocation);
+        JInvocation buildSetInvocation = JExpr.invoke("buildSet");
 
         for (ASTType astType : matched) {
-            asListInvocation.arg(generationUtil.ref(astType).staticRef("class"));
+            buildSetInvocation.arg(generationUtil.ref(astType).staticRef("class"));
         }
 
-        return collectionsInvocation;
+        return buildSetInvocation;
     }
 }

@@ -2,8 +2,10 @@ package org.silver;
 
 import org.silver.examples.BaseOne;
 import org.silver.examples.BaseTwo;
+import org.silver.examples.One;
 
 import java.util.List;
+import java.util.Set;
 
 /**
  * @author John Ericksen
@@ -12,15 +14,15 @@ import java.util.List;
 public interface Target {
 
     @AnnotatedBy(TestAnnotation.class)
-    List<Class> getAnnotated();
+    Set<Class> getAnnotated();
 
     @Inherits(BaseTwo.class)
-    List<Class> getExtendsBase();
+    Set<Class> getExtendsBase();
 
     @Inherits(BaseOne.class)
-    List<Class> getImplementsPlugin();
+    Set<Class> getImplementsPlugin();
 
     @Inherits(BaseTwo.class)
     @AnnotatedBy(TestAnnotation.class)
-    List<Class> getAnnotatedExtendsBase();
+    Set<Class> getAnnotatedExtendsBase();
 }

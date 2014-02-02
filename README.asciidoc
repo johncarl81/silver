@@ -2,11 +2,11 @@
 
 image:https://travis-ci.org/johncarl81/parceler.png?branch=master["Build Status", link="https://travis-ci.org/johncarl81/silver"]
 
-Have you ever wanted a list of all classes that implemented a certain interface?
+Have you ever wanted a set of all classes that implemented a certain interface?
 How about all classes annotated with a given annotation?
 Silver gives you this capability.
 Silver is an annotation processor that collects classes in your project based on a set of rules.
-Simply annotate an interface with `@Silver` that includes no-argument methods returning `List<Class>`.
+Simply annotate an interface with `@Silver` that includes no-argument methods returning `Set<Class>`.
 Annotate these methods with Silver rules like `@AnnotatedBy` or `@Inherits` and then compile with Silver on the classpath.
 Silver will implement the class and make it available via the `SilverUtil` class.
 
@@ -16,14 +16,14 @@ Silver will implement the class and make it available via the `SilverUtil` class
 @Silver
 public interface Example {
    @AnnotatedBy(TestAnnotation.class)
-   List<Class> getAnnotated();
+   Set<Class> getAnnotated();
 
    @Inherits(Base.class)
-   List<Class> getExtendsBase();
+   Set<Class> getExtendsBase();
 
    @Inherits(Base.class)
    @AnnotatedBy(TestAnnotation.class)
-   List<Class> getAnnotatedExtendsBase();
+   Set<Class> getAnnotatedExtendsBase();
 }
 
 public @interface TestAnnotation {}

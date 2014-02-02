@@ -8,7 +8,9 @@ import org.silver.examples.Three;
 import org.silver.examples.Two;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import static org.junit.Assert.assertEquals;
 
@@ -26,8 +28,8 @@ public class SilverTest {
 
     @Test
     public void testAnnotatedBy(){
-        List<Class> annotated = target.getAnnotated();
-        List<Class> comparison = new ArrayList<Class>(){{
+        Set<Class> annotated = target.getAnnotated();
+        Set<Class> comparison = new HashSet<Class>(){{
             add(One.class);
             add(Three.class);
         }};
@@ -37,8 +39,8 @@ public class SilverTest {
 
     @Test
     public void testExtendsBase(){
-        List<Class> extendsBase = target.getExtendsBase();
-        List<Class> comparison = new ArrayList<Class>(){{
+        Set<Class> extendsBase = target.getExtendsBase();
+        Set<Class> comparison = new HashSet<Class>(){{
             add(Two.class);
             add(Three.class);
         }};
@@ -48,8 +50,8 @@ public class SilverTest {
 
     @Test
     public void testAnnotatedExtendsBase(){
-        List<Class> extendsBase = target.getAnnotatedExtendsBase();
-        List<Class> comparison = new ArrayList<Class>(){{
+        Set<Class> extendsBase = target.getAnnotatedExtendsBase();
+        Set<Class> comparison = new HashSet<Class>(){{
             add(Three.class);
         }};
 
@@ -58,8 +60,8 @@ public class SilverTest {
 
     @Test
     public void testImplementsPlugin(){
-        List<Class> extendsBase = target.getImplementsPlugin();
-        List<Class> comparison = new ArrayList<Class>(){{
+        Set<Class> extendsBase = target.getImplementsPlugin();
+        Set<Class> comparison = new HashSet<Class>(){{
             add(One.class);
             add(Two.class);
             add(Three.class);
