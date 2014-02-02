@@ -1,0 +1,88 @@
+= Silver
+
+image:https://travis-ci.org/johncarl81/parceler.png?branch=master["Build Status", link="https://travis-ci.org/johncarl81/silver"]
+
+Have you ever wanted a list of all classes that implemented a certain interface?
+How about all classes annotated with a given annotation?
+Silver gives you this capability.
+Silver is an annotation processor that collects classes in your project based on a set of rules.
+Simply annotate an interface with `@Silver` that includes no-argument methods returning `List<Class>`.
+Annotate these methods with Silver rules like `@AnnotatedBy` or `@Inherits` and then compile with Silver on the classpath.
+Silver will implement the class and make it available via the `SilverUtil` class.
+
+.Example
+[source,java]
+----
+@Silver
+public interface Example {
+   @AnnotatedBy(TestAnnotation.class)
+   List<Class> getAnnotated();
+
+   @Inherits(Base.class)
+   List<Class> getExtendsBase();
+
+   @Inherits(Base.class)
+   @AnnotatedBy(TestAnnotation.class)
+   List<Class> getAnnotatedExtendsBase();
+}
+
+public @interface TestAnnotation {}
+public interface Base{}
+
+public class One implements Base{}
+
+@ExampleAnnotation
+public class Two implements Base{}
+
+@ExampleAnnotation
+public class Three{}
+
+SilverUtil.get(Example.class).getAnnotated(); // Returns Two.class, Three.class
+SilverUtil.get(Example.class).getExtendsBase(); // Returns One.class, Two.class
+SilverUtil.get(Example.class).getAnnotatedExtendsBase(); // Returns Two.class
+----
+
+== Getting Silver
+
+Compile and install Silver into your local Maven repository:
+
+[source,bash]
+----
+git clone https://github.com/johncarl81/silver.git
+cd silver
+mvn clean install;
+----
+
+Then reference in your project:
+
+[source,xml]
+----
+<dependency>
+    <groupId>org.silver</groupId>
+    <artifactId>silver</artifactId>
+    <version>${silver.version}</version>
+    <scope>provided</scope>
+</dependency>
+<dependency>
+    <groupId>org.silver</groupId>
+    <artifactId>silver-api</artifactId>
+    <version>${silver.version}</version>
+</dependency>
+----
+
+.License
+----
+Copyright 2013 John Ericksen
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+   http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+----

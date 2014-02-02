@@ -14,13 +14,13 @@ public interface Target {
     @AnnotatedBy(TestAnnotation.class)
     List<Class> getAnnotated();
 
-    @Extends(BaseTwo.class)
+    @Inherits(BaseTwo.class)
     List<Class> getExtendsBase();
 
-    @Extends(BaseOne.class)
+    @Inherits(BaseOne.class)
     List<Class> getImplementsPlugin();
 
-    @Extends(BaseTwo.class)
+    @Inherits(BaseTwo.class)
     @AnnotatedBy(TestAnnotation.class)
     List<Class> getAnnotatedExtendsBase();
 }

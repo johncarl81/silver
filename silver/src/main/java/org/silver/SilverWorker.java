@@ -85,8 +85,8 @@ public class SilverWorker extends AbstractCompletionTransactionWorker<Provider<A
                 }
             });
         }
-        if(method.isAnnotated(Extends.class)){
-            final ASTType extendsType = method.getASTAnnotation(Extends.class).getProperty("value", ASTType.class);
+        if(method.isAnnotated(Inherits.class)){
+            final ASTType extendsType = method.getASTAnnotation(Inherits.class).getProperty("value", ASTType.class);
 
             matcherConjunction.add(new Matcher<ASTType>(){
 

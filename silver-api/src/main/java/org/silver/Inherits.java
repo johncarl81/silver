@@ -11,7 +11,6 @@ import static java.lang.annotation.RetentionPolicy.SOURCE;
  */
 @Retention(SOURCE)
 @Target(METHOD)
-public @interface Extends {
-
+public @interface Inherits {
     Class value();
 }
