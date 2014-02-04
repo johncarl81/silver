@@ -85,6 +85,4 @@ public class SilverTest {
 
         assertEquals(comparison, extendsBase);
     }
-
-
 }

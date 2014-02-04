@@ -32,8 +32,7 @@ import org.androidtransfuse.gen.invocationBuilder.InvocationBuilderStrategy;
 import org.androidtransfuse.gen.variableDecorator.VariableExpressionBuilderFactory;
 import org.androidtransfuse.transaction.ScopedTransactionBuilder;
 import org.androidtransfuse.transaction.TransactionProcessorPool;
-import org.androidtransfuse.util.Logger;
-import org.androidtransfuse.util.MessagerLogger;
+import org.androidtransfuse.util.*;
 
 import javax.annotation.processing.Filer;
 import javax.annotation.processing.Messager;
@@ -49,8 +48,7 @@ import javax.lang.model.util.Elements;
         @DefineScope(annotation = ProcessingScope.class, scope = MapScope.class)
 })
 @Bindings({
-    @Bind(type = InvocationBuilderStrategy.class, to = SilverInvocationBuilderStrategy.class),
-    @Bind(type = ClassGenerationStrategy.class, to = SilverClassGenerationStrategy.class)
+    @Bind(type = InvocationBuilderStrategy.class, to = SilverInvocationBuilderStrategy.class)
 })
 @Install({
         ASTFactory.class,
@@ -58,6 +56,11 @@ import javax.lang.model.util.Elements;
         InjectionBuilderContextFactory.class})
 @Namespace("Silver")
 public class SilverModule {
+
+    @Provides
+    public ClassGenerationStrategy getClassGenerationStrategy(){
+        return new ClassGenerationStrategy(org.androidtransfuse.util.Generated.class, SilverAnnotationProcessor.class.getName());
+    }
 
     @Provides
     @CodeGenerationScope
