@@ -15,7 +15,7 @@ Silver will implement the class and make it available via the `SilverUtil` class
 ----
 @Silver
 public interface Example {
-   @AnnotatedBy(TestAnnotation.class)
+   @AnnotatedBy(ExampleAnnotation.class)
    Set<Class> getAnnotated();
 
    @Inherits(Base.class)
@@ -26,7 +26,7 @@ public interface Example {
    Set<Class> getAnnotatedExtendsBase();
 }
 
-public @interface TestAnnotation {}
+public @interface ExampleAnnotation {}
 public interface Base{}
 
 public class One implements Base{}
