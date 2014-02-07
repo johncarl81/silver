@@ -31,6 +31,7 @@ import org.androidtransfuse.gen.InjectionBuilderContextFactory;
 import org.androidtransfuse.gen.invocationBuilder.InvocationBuilderStrategy;
 import org.androidtransfuse.gen.variableDecorator.VariableExpressionBuilderFactory;
 import org.androidtransfuse.transaction.ScopedTransactionBuilder;
+import org.androidtransfuse.transaction.TransactionProcessorChannel;
 import org.androidtransfuse.transaction.TransactionProcessorPool;
 import org.androidtransfuse.util.*;
 
@@ -41,6 +42,7 @@ import javax.annotation.processing.RoundEnvironment;
 import javax.inject.Provider;
 import javax.inject.Singleton;
 import javax.lang.model.util.Elements;
+import java.util.Map;
 
 @BootstrapModule
 @DefineScopes({
@@ -106,10 +108,18 @@ public class SilverModule {
 
     @Provides
     public SilverProcessor buildSilverProcessor(Provider<SilverWorker> silverTransactionFactory,
+                                                Provider<SilverRepositoryGenerator> silverRepositoryGeneratorProvider,
                                                 ScopedTransactionBuilder scopedTransactionBuilder){
 
         TransactionProcessorPool<Provider<ASTType>, JDefinedClass> workingPool = new TransactionProcessorPool<Provider<ASTType>, JDefinedClass>();
 
-        return new SilverProcessor(workingPool, workingPool, silverTransactionFactory, scopedTransactionBuilder);
+        TransactionProcessorChannel<Provider<ASTType>, JDefinedClass, JDefinedClass> channel =
+                new TransactionProcessorChannel<Provider<ASTType>, JDefinedClass, JDefinedClass>(
+                        workingPool,
+                        new TransactionProcessorPool<Map<Provider<ASTType>, JDefinedClass>, JDefinedClass>(),
+                        scopedTransactionBuilder.buildFactory(silverRepositoryGeneratorProvider)
+                );
+
+        return new SilverProcessor(channel, workingPool, silverTransactionFactory, scopedTransactionBuilder);
     }
 }

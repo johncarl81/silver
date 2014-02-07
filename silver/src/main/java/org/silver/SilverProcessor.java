@@ -55,7 +55,7 @@ public class SilverProcessor {
     }
 
     public void execute() {
-        silverProcessor.execute();
+        processor.execute();
     }
 
     public void checkForErrors() {

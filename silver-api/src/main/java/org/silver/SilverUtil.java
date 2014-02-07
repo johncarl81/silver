@@ -135,7 +135,7 @@ public final class SilverUtil {
          */
         @SuppressWarnings("unchecked")
         public void loadRepository(ClassLoader classLoader){
-            /*try{
+            try{
                 Class repositoryClass = classLoader.loadClass(SIlVER_PACKAGE + "." + SIlVER_REPOSITORY_NAME);
                 Repository instance = (Repository) repositoryClass.newInstance();
                 generatedMap.putAll(instance.get());
@@ -146,16 +146,16 @@ public final class SilverUtil {
                 throw new SilverRuntimeException("Unable to instantiate generated Repository", e);
             } catch (IllegalAccessException e) {
                 throw new SilverRuntimeException("Unable to access generated Repository", e);
-            }*/
+            }
         }
     }
 
     /**
      * @author John Ericksen
      */
-    public interface Repository {
+    public interface Repository<T> {
 
-        Map<Class, SilverImplementation> get();
+        Map<Class, T> get();
     }
 
 }
