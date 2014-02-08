@@ -33,7 +33,6 @@ import java.util.Set;
  * @author John Ericksen
  */
 @SupportedAnnotationTypes("*")
-@SupportedSourceVersion(SourceVersion.RELEASE_6)
 @Bootstrap
 public class SilverAnnotationProcessor extends AbstractProcessor {
 
@@ -73,5 +72,10 @@ public class SilverAnnotationProcessor extends AbstractProcessor {
         processingScope.exit();
 
         return true;
+    }
+
+    @Override
+    public SourceVersion getSupportedSourceVersion() {
+        return SourceVersion.latestSupported();
     }
 }
