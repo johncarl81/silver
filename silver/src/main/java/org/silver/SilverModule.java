@@ -33,12 +33,15 @@ import org.androidtransfuse.gen.variableDecorator.VariableExpressionBuilderFacto
 import org.androidtransfuse.transaction.ScopedTransactionBuilder;
 import org.androidtransfuse.transaction.TransactionProcessorChannel;
 import org.androidtransfuse.transaction.TransactionProcessorPool;
-import org.androidtransfuse.util.*;
+import org.androidtransfuse.util.Logger;
+import org.androidtransfuse.util.MessagerLogger;
+import org.androidtransfuse.validation.Validator;
 
 import javax.annotation.processing.Filer;
 import javax.annotation.processing.Messager;
 import javax.annotation.processing.ProcessingEnvironment;
 import javax.annotation.processing.RoundEnvironment;
+import javax.inject.Named;
 import javax.inject.Provider;
 import javax.inject.Singleton;
 import javax.lang.model.util.Elements;
@@ -85,7 +88,13 @@ public class SilverModule {
     @Provides
     @Singleton
     public Logger getLogger(ProcessingEnvironment processingEnvironment){
-        return new MessagerLogger(processingEnvironment.getMessager());
+        return new MessagerLogger(getLogPreprend(), processingEnvironment.getMessager());
+    }
+
+    @Provides
+    @Named(Validator.LOG_PREPEND)
+    public String getLogPreprend(){
+        return "Silver: ";
     }
 
     @Provides

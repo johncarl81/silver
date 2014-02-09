@@ -17,26 +17,25 @@ package org.silver;
 
 import org.androidtransfuse.adapter.ASTAccessModifier;
 import org.androidtransfuse.gen.invocationBuilder.InvocationBuilderStrategy;
-import org.androidtransfuse.gen.invocationBuilder.ModifierInjectionBuilder;
-import org.androidtransfuse.gen.invocationBuilder.PublicInjectionBuilder;
+import org.androidtransfuse.gen.invocationBuilder.ModifiedInvocationBuilder;
+import org.androidtransfuse.gen.invocationBuilder.PublicInvocationBuilder;
 
 import javax.inject.Inject;
-import javax.inject.Provider;
 
 /**
  * @author John Ericksen
  */
 public class SilverInvocationBuilderStrategy implements InvocationBuilderStrategy {
 
-    private final Provider<PublicInjectionBuilder> publicProvider;
+    private final PublicInvocationBuilder publicInvocationBuilder;
 
     @Inject
-    public SilverInvocationBuilderStrategy(Provider<PublicInjectionBuilder> publicProvider) {
-        this.publicProvider = publicProvider;
+    public SilverInvocationBuilderStrategy(PublicInvocationBuilder publicInvocationBuilder) {
+        this.publicInvocationBuilder = publicInvocationBuilder;
     }
 
     @Override
-    public ModifierInjectionBuilder getInjectionBuilder(ASTAccessModifier modifier) {
-        return publicProvider.get();
+    public ModifiedInvocationBuilder getInjectionBuilder(ASTAccessModifier modifier) {
+        return publicInvocationBuilder;
     }
 }
