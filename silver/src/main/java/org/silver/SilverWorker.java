@@ -16,10 +16,7 @@
 package org.silver;
 
 import com.sun.codemodel.*;
-import org.androidtransfuse.adapter.ASTAnnotation;
-import org.androidtransfuse.adapter.ASTField;
-import org.androidtransfuse.adapter.ASTMethod;
-import org.androidtransfuse.adapter.ASTType;
+import org.androidtransfuse.adapter.*;
 import org.androidtransfuse.adapter.element.ASTElementFactory;
 import org.androidtransfuse.gen.ClassGenerationUtil;
 import org.androidtransfuse.gen.ClassNamer;
@@ -113,6 +110,10 @@ public class SilverWorker extends AbstractCompletionTransactionWorker<Provider<A
 
                     for( ASTMethod astMethod : astType.getMethods()) {
                         annotations.addAll(astMethod.getAnnotations());
+
+                        for( ASTParameter astParameter : astMethod.getParameters()) {
+                            annotations.addAll(astParameter.getAnnotations());
+                        }
                     }
 
                     for( ASTField astField : astType.getFields()) {
