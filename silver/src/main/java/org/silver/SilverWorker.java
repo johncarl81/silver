@@ -16,9 +16,7 @@
 package org.silver;
 
 import com.sun.codemodel.*;
-import org.androidtransfuse.adapter.ASTAnnotation;
-import org.androidtransfuse.adapter.ASTMethod;
-import org.androidtransfuse.adapter.ASTType;
+import org.androidtransfuse.adapter.*;
 import org.androidtransfuse.adapter.element.ASTElementFactory;
 import org.androidtransfuse.gen.ClassGenerationUtil;
 import org.androidtransfuse.gen.ClassNamer;
@@ -108,7 +106,23 @@ public class SilverWorker extends AbstractCompletionTransactionWorker<Provider<A
             matcherConjunction.add(new Matcher<ASTType>() {
                 @Override
                 public boolean matches(ASTType astType) {
-                    for (ASTAnnotation astAnnotation : astType.getAnnotations()) {
+                    final ArrayList<ASTAnnotation> annotations = new ArrayList<ASTAnnotation>();
+
+                    for( ASTMethod astMethod : astType.getMethods()) {
+                        annotations.addAll(astMethod.getAnnotations());
+
+                        for( ASTParameter astParameter : astMethod.getParameters()) {
+                            annotations.addAll(astParameter.getAnnotations());
+                        }
+                    }
+
+                    for( ASTField astField : astType.getFields()) {
+                        annotations.addAll(astField.getAnnotations());
+                    }
+
+                    annotations.addAll(astType.getAnnotations());
+
+                    for (ASTAnnotation astAnnotation : annotations) {
                         if(astAnnotation.getASTType().equals(annotatedBy)){
                             return true;
                         }
