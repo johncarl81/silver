@@ -18,6 +18,7 @@ package org.silver;
 import com.sun.codemodel.*;
 import org.androidtransfuse.adapter.*;
 import org.androidtransfuse.adapter.element.ASTElementFactory;
+import org.androidtransfuse.adapter.element.ElementVisitorAdaptor;
 import org.androidtransfuse.gen.ClassGenerationUtil;
 import org.androidtransfuse.gen.ClassNamer;
 import org.androidtransfuse.gen.UniqueVariableNamer;
@@ -82,7 +83,7 @@ public class SilverWorker extends AbstractCompletionTransactionWorker<Provider<A
 
                 JClass collectionType = generationUtil.narrowRef(astMethod.getReturnType());
 
-                JFieldVar collectionField = silverimpl.field(JMod.PRIVATE | JMod.FINAL | JMod.STATIC, collectionType.erasure(), namer.generateName(collectionType), generateTypeCollection(astMethod));
+                JFieldVar collectionField = silverimpl.field(JMod.PRIVATE | JMod.FINAL | JMod.STATIC, collectionType, namer.generateName(collectionType), generateTypeCollection(astMethod));
 
                 JMethod method = silverimpl.method(JMod.PUBLIC, collectionType, astMethod.getName());
 
@@ -112,6 +113,14 @@ public class SilverWorker extends AbstractCompletionTransactionWorker<Provider<A
                         annotations.addAll(astMethod.getAnnotations());
 
                         for( ASTParameter astParameter : astMethod.getParameters()) {
+                            annotations.addAll(astParameter.getAnnotations());
+                        }
+                    }
+
+                    for( ASTConstructor astConstructor : astType.getConstructors()) {
+                        annotations.addAll(astConstructor.getAnnotations());
+
+                        for( ASTParameter astParameter : astConstructor.getParameters()) {
                             annotations.addAll(astParameter.getAnnotations());
                         }
                     }
@@ -160,14 +169,14 @@ public class SilverWorker extends AbstractCompletionTransactionWorker<Provider<A
             }
         };
 
-        List<ASTType> matched = new ArrayList<ASTType>();
+        Set<ASTType> matched = match(roundEnvironmentProvider.get().getRootElements(), matcher);
+
         for (Element element : roundEnvironmentProvider.get().getRootElements()) {
             ASTType elementType = astElementFactory.getType((TypeElement) element);
             if(matcher.matches(elementType)){
                 matched.add(elementType);
             }
         }
-
 
         JInvocation buildSetInvocation = JExpr.invoke("buildSet");
 
@@ -176,5 +185,29 @@ public class SilverWorker extends AbstractCompletionTransactionWorker<Provider<A
         }
 
         return buildSetInvocation;
+    }
+
+    private Set<ASTType> match(Collection<? extends Element> inputElements, final Matcher<ASTType> matcher){
+        final Set<ASTType> matched = new HashSet<ASTType>();
+
+        for (Element element : inputElements) {
+            element.accept(new ElementVisitorAdaptor<Void, Void>(){
+                @Override
+                public Void visitType(TypeElement typeElement, Void input) {
+                    ASTType elementType = astElementFactory.getType(typeElement);
+                    if(matcher.matches(elementType)){
+                        matched.add(elementType);
+                    }
+
+                    return null;
+                }
+            }, null);
+
+
+
+            matched.addAll(match(element.getEnclosedElements(), matcher));
+        }
+
+        return matched;
     }
 }

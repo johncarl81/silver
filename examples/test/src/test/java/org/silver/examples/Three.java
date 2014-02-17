@@ -20,6 +20,12 @@ import org.silver.TestAnnotation;
 /**
  * @author John Ericksen
  */
-@TestAnnotation
 public class Three extends BaseTwo {
+    @TestAnnotation
+    int value;
+
+    public class Four {
+        @TestAnnotation
+        int another;
+    }
 }

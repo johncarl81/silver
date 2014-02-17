@@ -23,6 +23,6 @@ import java.lang.annotation.Target;
 /**
  * @author John Ericksen
  */
-@Target(ElementType.TYPE)
+@Target({ElementType.TYPE, ElementType.FIELD})
 @Retention(RetentionPolicy.RUNTIME)
 public @interface TestAnnotation {}

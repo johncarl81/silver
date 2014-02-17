@@ -22,9 +22,7 @@ import org.silver.examples.One;
 import org.silver.examples.Three;
 import org.silver.examples.Two;
 
-import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 import static org.junit.Assert.assertEquals;
@@ -47,6 +45,7 @@ public class SilverTest {
         Set<Class> comparison = new HashSet<Class>(){{
             add(One.class);
             add(Three.class);
+            add(Three.Four.class);
         }};
 
         assertEquals(comparison, annotated);
