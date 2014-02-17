@@ -17,9 +17,7 @@ package org.silver;
 
 import org.silver.examples.BaseOne;
 import org.silver.examples.BaseTwo;
-import org.silver.examples.One;
 
-import java.util.List;
 import java.util.Set;
 
 /**
@@ -29,15 +27,15 @@ import java.util.Set;
 public interface Target {
 
     @AnnotatedBy(TestAnnotation.class)
-    Set<Class> getAnnotated();
+    Set<Class<?>> getAnnotated();
 
     @Inherits(BaseTwo.class)
-    Set<Class> getExtendsBase();
+    Set<Class<?>> getExtendsBase();
 
     @Inherits(BaseOne.class)
-    Set<Class> getImplementsPlugin();
+    Set<Class<?>> getImplementsPlugin();
 
     @Inherits(BaseTwo.class)
     @AnnotatedBy(TestAnnotation.class)
-    Set<Class> getAnnotatedExtendsBase();
+    Set<Class<?>> getAnnotatedExtendsBase();
 }

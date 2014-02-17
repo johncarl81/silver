@@ -17,6 +17,7 @@ package org.silver;
 
 import com.sun.codemodel.*;
 import org.androidtransfuse.adapter.*;
+import org.androidtransfuse.adapter.classes.ASTClassFactory;
 import org.androidtransfuse.adapter.element.ASTElementFactory;
 import org.androidtransfuse.adapter.element.ElementVisitorAdaptor;
 import org.androidtransfuse.gen.ClassGenerationUtil;
@@ -24,6 +25,7 @@ import org.androidtransfuse.gen.ClassNamer;
 import org.androidtransfuse.gen.UniqueVariableNamer;
 import org.androidtransfuse.transaction.AbstractCompletionTransactionWorker;
 import org.androidtransfuse.util.matcher.Matcher;
+import org.androidtransfuse.validation.Validator;
 
 import javax.annotation.processing.RoundEnvironment;
 import javax.inject.Inject;
@@ -39,15 +41,30 @@ public class SilverWorker extends AbstractCompletionTransactionWorker<Provider<A
 
     private final Provider<RoundEnvironment> roundEnvironmentProvider;
     private final ASTElementFactory astElementFactory;
+    private final ASTClassFactory astClassFactory;
+    private final ASTFactory astFactory;
     private final ClassGenerationUtil generationUtil;
     private final UniqueVariableNamer namer;
+    private final JCodeModel codeModel;
+    private final Validator validator;
 
     @Inject
-    public SilverWorker(Provider<RoundEnvironment> roundEnvironmentProvider, ASTElementFactory astElementFactory, ClassGenerationUtil generationUtil, UniqueVariableNamer namer) {
+    public SilverWorker(Provider<RoundEnvironment> roundEnvironmentProvider,
+                        ASTElementFactory astElementFactory,
+                        ASTClassFactory astClassFactory,
+                        ASTFactory astFactory,
+                        ClassGenerationUtil generationUtil,
+                        UniqueVariableNamer namer,
+                        JCodeModel codeModel,
+                        Validator validator) {
         this.roundEnvironmentProvider = roundEnvironmentProvider;
         this.astElementFactory = astElementFactory;
+        this.astClassFactory = astClassFactory;
+        this.astFactory = astFactory;
         this.generationUtil = generationUtil;
         this.namer = namer;
+        this.codeModel = codeModel;
+        this.validator = validator;
     }
 
     @Override
@@ -55,9 +72,17 @@ public class SilverWorker extends AbstractCompletionTransactionWorker<Provider<A
         ASTType implementation = astTypeProvider.get();
 
         try {
-            JDefinedClass silverimpl = generationUtil.defineClass(ClassNamer.className(implementation).append(SilverUtil.IMPL_EXT).build());
+            if(!implementation.isInterface()){
+                validator.error("Only interfaces may be annotated with @Silver.").element(implementation).build();
+            }
 
-            silverimpl._implements(generationUtil.ref(implementation));
+            JDefinedClass silverImpl = generationUtil.defineClass(ClassNamer.className(implementation).append(SilverUtil.IMPL_EXT).build());
+
+            silverImpl._implements(generationUtil.ref(implementation));
+
+            JClass classWildcard = generationUtil.ref(Class.class).narrow(codeModel.wildcard());
+            JClass setRef = generationUtil.ref(Set.class).narrow(classWildcard);
+            JClass hashsetRef = generationUtil.ref(HashSet.class).narrow(classWildcard);
 
 
             // Builds the following static method:
@@ -67,30 +92,38 @@ public class SilverWorker extends AbstractCompletionTransactionWorker<Provider<A
             //     Collections.addAll(set, input);
             //     return Collections.unmodifiableSet(set);
             // }
-
-            JClass setRef = generationUtil.ref(Set.class).narrow(Class.class);
-            JClass hashsetRef = generationUtil.ref(HashSet.class).narrow(Class.class);
-
-            JMethod buildSet = silverimpl.method(JMod.PRIVATE | JMod.STATIC, setRef, "buildSet");
-            JVar inputVar = buildSet.varParam(Class.class, namer.generateName(Class.class));
+            JMethod buildSet = silverImpl.method(JMod.PRIVATE | JMod.STATIC, setRef, "buildSet");
+            JVar inputVar = buildSet.varParam(classWildcard, namer.generateName(classWildcard));
             JBlock buildSetBody = buildSet.body();
 
             JVar setVar = buildSetBody.decl(setRef, namer.generateName(setRef), JExpr._new(hashsetRef));
             buildSetBody.staticInvoke(generationUtil.ref(Collections.class), "addAll").arg(setVar).arg(inputVar);
             buildSetBody._return(generationUtil.ref(Collections.class).staticInvoke("unmodifiableSet").arg(setVar));
 
+            ASTType returnType = astFactory.buildGenericTypeWrapper(astClassFactory.getType(Set.class),
+                    astFactory.buildParameterBuilder(astFactory.buildGenericTypeWrapper(astClassFactory.getType(Class.class),
+                            astFactory.buildParameterBuilder(ASTWildcardType.WILDCARD))));
+
             for (ASTMethod astMethod : implementation.getMethods()) {
 
-                JClass collectionType = generationUtil.narrowRef(astMethod.getReturnType());
+                if(!returnType.equals(astMethod.getReturnType())){
+                    validator.error("Silver annotated methods must return Set<Class<?>>.").element(astMethod).build();
+                }
 
-                JFieldVar collectionField = silverimpl.field(JMod.PRIVATE | JMod.FINAL | JMod.STATIC, collectionType, namer.generateName(collectionType), generateTypeCollection(astMethod));
+                if(astMethod.getParameters().size() > 0){
+                    validator.error("Silver annotated methods must have zero arguments.").element(astMethod).build();
+                }
 
-                JMethod method = silverimpl.method(JMod.PUBLIC, collectionType, astMethod.getName());
+                JClass collectionType = generationUtil.narrowRef(returnType);
+
+                JFieldVar collectionField = silverImpl.field(JMod.PRIVATE | JMod.FINAL | JMod.STATIC, collectionType, namer.generateName(collectionType), generateTypeCollection(astMethod));
+
+                JMethod method = silverImpl.method(JMod.PUBLIC, collectionType, astMethod.getName());
 
                 method.body()._return(collectionField);
             }
 
-            return silverimpl;
+            return silverImpl;
 
         } catch (JClassAlreadyExistsException e) {
             throw new SilverRuntimeException("Class Already exists", e);

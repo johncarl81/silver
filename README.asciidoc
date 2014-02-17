@@ -16,14 +16,14 @@ Silver will implement the class and make it available via the `SilverUtil` class
 @Silver
 public interface Example {
    @AnnotatedBy(ExampleAnnotation.class)
-   Set<Class> getAnnotated();
+   Set<Class<?>> getAnnotated();
 
    @Inherits(Base.class)
-   Set<Class> getExtendsBase();
+   Set<Class<?>> getExtendsBase();
 
    @Inherits(Base.class)
    @AnnotatedBy(TestAnnotation.class)
-   Set<Class> getAnnotatedExtendsBase();
+   Set<Class<?>> getAnnotatedExtendsBase();
 }
 
 public @interface ExampleAnnotation {}

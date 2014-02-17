@@ -41,8 +41,8 @@ public class SilverTest {
 
     @Test
     public void testAnnotatedBy(){
-        Set<Class> annotated = target.getAnnotated();
-        Set<Class> comparison = new HashSet<Class>(){{
+        Set<Class<?>> annotated = target.getAnnotated();
+        Set<Class<?>> comparison = new HashSet<Class<?>>(){{
             add(One.class);
             add(Three.class);
             add(Three.Four.class);
@@ -53,8 +53,8 @@ public class SilverTest {
 
     @Test
     public void testExtendsBase(){
-        Set<Class> extendsBase = target.getExtendsBase();
-        Set<Class> comparison = new HashSet<Class>(){{
+        Set<Class<?>> extendsBase = target.getExtendsBase();
+        Set<Class<?>> comparison = new HashSet<Class<?>>(){{
             add(Two.class);
             add(Three.class);
         }};
@@ -64,8 +64,8 @@ public class SilverTest {
 
     @Test
     public void testAnnotatedExtendsBase(){
-        Set<Class> extendsBase = target.getAnnotatedExtendsBase();
-        Set<Class> comparison = new HashSet<Class>(){{
+        Set<Class<?>> extendsBase = target.getAnnotatedExtendsBase();
+        Set<Class<?>> comparison = new HashSet<Class<?>>(){{
             add(Three.class);
         }};
 
@@ -74,8 +74,8 @@ public class SilverTest {
 
     @Test
     public void testImplementsPlugin(){
-        Set<Class> extendsBase = target.getImplementsPlugin();
-        Set<Class> comparison = new HashSet<Class>(){{
+        Set<Class<?>> extendsBase = target.getImplementsPlugin();
+        Set<Class<?>> comparison = new HashSet<Class<?>>(){{
             add(One.class);
             add(Two.class);
             add(Three.class);
