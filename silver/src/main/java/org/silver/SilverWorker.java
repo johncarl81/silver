@@ -205,9 +205,11 @@ public class SilverWorker extends AbstractCompletionTransactionWorker<Provider<A
         Set<ASTType> matched = match(roundEnvironmentProvider.get().getRootElements(), matcher);
 
         for (Element element : roundEnvironmentProvider.get().getRootElements()) {
-            ASTType elementType = astElementFactory.getType((TypeElement) element);
-            if(matcher.matches(elementType)){
-                matched.add(elementType);
+            if( element instanceof TypeElement ) { // false for element instanceof PackageSymbol (eg. "com.facebook.internal")
+                ASTType elementType = astElementFactory.getType((TypeElement) element);
+                if(matcher.matches(elementType)){
+                    matched.add(elementType);
+                }
             }
         }
 
