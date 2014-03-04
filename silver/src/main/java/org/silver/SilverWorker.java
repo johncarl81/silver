@@ -204,13 +204,6 @@ public class SilverWorker extends AbstractCompletionTransactionWorker<Provider<A
 
         Set<ASTType> matched = match(roundEnvironmentProvider.get().getRootElements(), matcher);
 
-        for (Element element : roundEnvironmentProvider.get().getRootElements()) {
-            ASTType elementType = astElementFactory.getType((TypeElement) element);
-            if(matcher.matches(elementType)){
-                matched.add(elementType);
-            }
-        }
-
         JInvocation buildSetInvocation = JExpr.invoke("buildSet");
 
         for (ASTType astType : matched) {
