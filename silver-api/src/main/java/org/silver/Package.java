@@ -15,34 +15,17 @@
  */
 package org.silver;
 
-import org.silver.examples.BaseOne;
-import org.silver.examples.BaseTwo;
+import java.lang.annotation.Retention;
+import java.lang.annotation.Target;
 
-import java.util.Set;
+import static java.lang.annotation.ElementType.METHOD;
+import static java.lang.annotation.RetentionPolicy.SOURCE;
 
 /**
  * @author John Ericksen
  */
-@Silver
-public interface Target {
-
-    @AnnotatedBy(TestAnnotation.class)
-    Set<Class<?>> getAnnotated();
-
-    @Inherits(BaseTwo.class)
-    Set<Class<?>> getExtendsBase();
-
-    @Inherits(BaseOne.class)
-    Set<Class<?>> getImplementsPlugin();
-
-    @Inherits(BaseTwo.class)
-    @AnnotatedBy(TestAnnotation.class)
-    Set<Class<?>> getAnnotatedExtendsBase();
-
-    @Package("org.silver.examples")
-    Set<Class<?>> getExamplesPackage();
-
-    @Package("org.silver.examples.sub")
-    @Inherits(BaseTwo.class)
-    Set<Class<?>> getSubPackage();
+@Retention(SOURCE)
+@Target(METHOD)
+public @interface Package {
+    String value();
 }

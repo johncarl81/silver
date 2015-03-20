@@ -17,10 +17,11 @@ package org.silver;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.silver.examples.BaseOne;
 import org.silver.examples.BaseTwo;
-import org.silver.examples.One;
 import org.silver.examples.Three;
-import org.silver.examples.Two;
+import org.silver.examples.sub.One;
+import org.silver.examples.sub.Two;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -83,5 +84,30 @@ public class SilverTest {
         }};
 
         assertEquals(comparison, extendsBase);
+    }
+
+    @Test
+    public void testExamplesPackage(){
+        Set<Class<?>> examplesPackage = target.getExamplesPackage();
+        Set<Class<?>> comparison = new HashSet<Class<?>>(){{
+            add(One.class);
+            add(Two.class);
+            add(Three.class);
+            add(BaseOne.class);
+            add(BaseTwo.class);
+            add(Three.Four.class);
+        }};
+
+        assertEquals(comparison, examplesPackage);
+    }
+
+    @Test
+    public void testSubPackage(){
+        Set<Class<?>> subPackage = target.getSubPackage();
+        Set<Class<?>> comparison = new HashSet<Class<?>>(){{
+            add(Two.class);
+        }};
+
+        assertEquals(comparison, subPackage);
     }
 }

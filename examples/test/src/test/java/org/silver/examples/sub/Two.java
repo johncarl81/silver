@@ -13,13 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.silver.examples;
+package org.silver.examples.sub;
 
-import org.silver.TestAnnotation;
+import org.silver.examples.BaseTwo;
 
 /**
  * @author John Ericksen
  */
-@TestAnnotation
-public class One implements BaseOne {
+public class Two extends BaseTwo {
 }

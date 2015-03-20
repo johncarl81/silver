@@ -15,6 +15,7 @@
  */
 package org.silver;
 
+import com.google.common.collect.ImmutableMap;
 import com.sun.codemodel.*;
 import org.androidtransfuse.adapter.PackageClass;
 import org.androidtransfuse.gen.AbstractRepositoryGenerator;
@@ -23,11 +24,12 @@ import org.androidtransfuse.gen.ClassNamer;
 import org.androidtransfuse.gen.UniqueVariableNamer;
 
 import javax.inject.Inject;
+import java.util.Map;
 
 /**
  * @author John Ericksen
  */
-public class SilverRepositoryGenerator extends AbstractRepositoryGenerator {
+public class SilverRepositoryGenerator extends AbstractRepositoryGenerator<JDefinedClass> {
 
     private static final PackageClass SIlVER_REPOSITORY = new PackageClass(SilverUtil.SIlVER_PACKAGE, SilverUtil.SIlVER_REPOSITORY_NAME);
 
@@ -42,7 +44,7 @@ public class SilverRepositoryGenerator extends AbstractRepositoryGenerator {
     }
 
     @Override
-    protected JExpression generateInstance(JDefinedClass repositoryClass, JClass inputClass, JClass outputClass) throws JClassAlreadyExistsException {
+    protected Map<? extends JExpression, ? extends JExpression> generateMapping(JDefinedClass repositoryClass, JClass inputClass, JDefinedClass outputClass) throws JClassAlreadyExistsException {
         String innerClassName = classNamer.numberedClassName(inputClass).append(SilverUtil.IMPL_EXT).namespaced().build().getClassName();
 
         JDefinedClass factoryInnerClass = repositoryClass._class(JMod.PRIVATE | JMod.STATIC | JMod.FINAL, innerClassName);
@@ -54,6 +56,6 @@ public class SilverRepositoryGenerator extends AbstractRepositoryGenerator {
 
         method.body()._return(JExpr._new(outputClass));
 
-        return JExpr._new(factoryInnerClass);
+        return ImmutableMap.of(inputClass.dotclass(), JExpr._new(factoryInnerClass));
     }
 }

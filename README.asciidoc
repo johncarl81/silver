@@ -7,7 +7,7 @@ How about all classes annotated with a given annotation?
 Silver gives you this capability.
 Silver is an annotation processor that collects classes in your project based on a set of rules.
 Simply annotate an interface with `@Silver` that includes no-argument methods returning `Set<Class>`.
-Annotate these methods with Silver rules like `@AnnotatedBy` or `@Inherits` and then compile with Silver on the classpath.
+Annotate these methods with Silver rules like `@AnnotatedBy`, `@Inherits`, `@Package` and then compile with Silver on the classpath.
 Silver will implement the class and make it available via the `SilverUtil` class.
 
 .Example
@@ -24,6 +24,9 @@ public interface Example {
    @Inherits(Base.class)
    @AnnotatedBy(TestAnnotation.class)
    Set<Class<?>> getAnnotatedExtendsBase();
+
+   @Package("org.example")
+   Set<Class<?>> getExamplePackageClasses();
 }
 
 public @interface ExampleAnnotation {}
@@ -40,6 +43,7 @@ public class Three{}
 SilverUtil.get(Example.class).getAnnotated(); // Returns Two.class, Three.class
 SilverUtil.get(Example.class).getExtendsBase(); // Returns One.class, Two.class
 SilverUtil.get(Example.class).getAnnotatedExtendsBase(); // Returns Two.class
+Silverutil.get(Example.class).getExamplePackageClasses(); // Returns classes under org.example
 ----
 
 == Getting Silver

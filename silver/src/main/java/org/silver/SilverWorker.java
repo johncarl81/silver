@@ -184,6 +184,17 @@ public class SilverWorker extends AbstractCompletionTransactionWorker<Provider<A
                 }
             });
         }
+        if(method.isAnnotated(Package.class)){
+            final String packageName = method.getAnnotation(Package.class).value();
+
+            matcherConjunction.add(new Matcher<ASTType>(){
+
+                @java.lang.Override
+                public boolean matches(ASTType input) {
+                    return input.getPackageClass().getPackage().startsWith(packageName);
+                }
+            });
+        }
 
 
         Matcher<ASTType> matcher = new Matcher<ASTType>() {
