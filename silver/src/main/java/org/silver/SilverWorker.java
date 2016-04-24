@@ -15,8 +15,28 @@
  */
 package org.silver;
 
-import com.sun.codemodel.*;
-import org.androidtransfuse.adapter.*;
+import com.google.common.collect.ImmutableList;
+import com.sun.codemodel.JBlock;
+import com.sun.codemodel.JClass;
+import com.sun.codemodel.JClassAlreadyExistsException;
+import com.sun.codemodel.JCodeModel;
+import com.sun.codemodel.JDefinedClass;
+import com.sun.codemodel.JExpr;
+import com.sun.codemodel.JExpression;
+import com.sun.codemodel.JFieldVar;
+import com.sun.codemodel.JInvocation;
+import com.sun.codemodel.JMethod;
+import com.sun.codemodel.JMod;
+import com.sun.codemodel.JVar;
+import org.androidtransfuse.adapter.ASTAnnotation;
+import org.androidtransfuse.adapter.ASTConstructor;
+import org.androidtransfuse.adapter.ASTFactory;
+import org.androidtransfuse.adapter.ASTField;
+import org.androidtransfuse.adapter.ASTMethod;
+import org.androidtransfuse.adapter.ASTParameter;
+import org.androidtransfuse.adapter.ASTType;
+import org.androidtransfuse.adapter.ASTWildcardType;
+import org.androidtransfuse.adapter.LazyTypeParameterBuilder;
 import org.androidtransfuse.adapter.classes.ASTClassFactory;
 import org.androidtransfuse.adapter.element.ASTElementFactory;
 import org.androidtransfuse.adapter.element.ElementVisitorAdaptor;
@@ -32,7 +52,12 @@ import javax.inject.Inject;
 import javax.inject.Provider;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.TypeElement;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 /**
  * @author John Ericksen
@@ -100,9 +125,17 @@ public class SilverWorker extends AbstractCompletionTransactionWorker<Provider<A
             buildSetBody.staticInvoke(generationUtil.ref(Collections.class), "addAll").arg(setVar).arg(inputVar);
             buildSetBody._return(generationUtil.ref(Collections.class).staticInvoke("unmodifiableSet").arg(setVar));
 
-            ASTType returnType = astFactory.buildGenericTypeWrapper(astClassFactory.getType(Set.class),
-                    astFactory.buildParameterBuilder(astFactory.buildGenericTypeWrapper(astClassFactory.getType(Class.class),
-                            astFactory.buildParameterBuilder(ASTWildcardType.WILDCARD))));
+            ASTType returnType = astFactory.buildGenericTypeWrapper(astClassFactory.getType(Set.class), new LazyTypeParameterBuilder() {
+                @Override
+                public ImmutableList<ASTType> buildGenericParameters() {
+                    return ImmutableList.<ASTType>of(astFactory.buildGenericTypeWrapper(astClassFactory.getType(Class.class), new LazyTypeParameterBuilder() {
+                        @Override
+                        public ImmutableList<ASTType> buildGenericParameters() {
+                            return ImmutableList.<ASTType>of(new ASTWildcardType(null, null));
+                        }
+                    }));
+                }
+            });
 
             for (ASTMethod astMethod : implementation.getMethods()) {
 

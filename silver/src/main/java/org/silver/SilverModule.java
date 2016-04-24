@@ -20,7 +20,12 @@ import com.sun.codemodel.JDefinedClass;
 import org.androidtransfuse.CodeGenerationScope;
 import org.androidtransfuse.adapter.ASTFactory;
 import org.androidtransfuse.adapter.ASTType;
-import org.androidtransfuse.annotations.*;
+import org.androidtransfuse.annotations.Bind;
+import org.androidtransfuse.annotations.Bindings;
+import org.androidtransfuse.annotations.DefineScope;
+import org.androidtransfuse.annotations.DefineScopes;
+import org.androidtransfuse.annotations.Install;
+import org.androidtransfuse.annotations.Provides;
 import org.androidtransfuse.bootstrap.BootstrapModule;
 import org.androidtransfuse.bootstrap.Namespace;
 import org.androidtransfuse.config.MapScope;
@@ -88,7 +93,7 @@ public class SilverModule {
     @Provides
     @Singleton
     public Logger getLogger(ProcessingEnvironment processingEnvironment){
-        return new MessagerLogger(getLogPreprend(), processingEnvironment.getMessager());
+        return new MessagerLogger(getLogPreprend(), processingEnvironment.getMessager(), false);
     }
 
     @Provides
@@ -118,7 +123,8 @@ public class SilverModule {
     @Provides
     public SilverProcessor buildSilverProcessor(Provider<SilverWorker> silverTransactionFactory,
                                                 Provider<SilverRepositoryGenerator> silverRepositoryGeneratorProvider,
-                                                ScopedTransactionBuilder scopedTransactionBuilder){
+                                                ScopedTransactionBuilder scopedTransactionBuilder,
+                                                Logger logger){
 
         TransactionProcessorPool<Provider<ASTType>, JDefinedClass> workingPool = new TransactionProcessorPool<Provider<ASTType>, JDefinedClass>();
 
@@ -129,6 +135,6 @@ public class SilverModule {
                         scopedTransactionBuilder.buildFactory(silverRepositoryGeneratorProvider)
                 );
 
-        return new SilverProcessor(channel, workingPool, silverTransactionFactory, scopedTransactionBuilder);
+        return new SilverProcessor(channel, workingPool, silverTransactionFactory, scopedTransactionBuilder, logger);
     }
 }

@@ -15,9 +15,12 @@
  */
 package org.silver;
 
+import com.google.auto.service.AutoService;
 import com.google.common.base.Function;
 import com.google.common.base.Predicate;
 import com.google.common.collect.FluentIterable;
+import org.androidtransfuse.AnnotationProcessorBase;
+import org.androidtransfuse.SupportedAnnotations;
 import org.androidtransfuse.adapter.element.ReloadableASTElementFactory;
 import org.androidtransfuse.annotations.ScopeReference;
 import org.androidtransfuse.bootstrap.Bootstrap;
@@ -25,10 +28,9 @@ import org.androidtransfuse.bootstrap.Bootstraps;
 import org.androidtransfuse.config.EnterableScope;
 import org.androidtransfuse.scope.ScopeKey;
 
-import javax.annotation.processing.AbstractProcessor;
 import javax.annotation.processing.ProcessingEnvironment;
+import javax.annotation.processing.Processor;
 import javax.annotation.processing.RoundEnvironment;
-import javax.annotation.processing.SupportedAnnotationTypes;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import javax.lang.model.SourceVersion;
@@ -39,9 +41,10 @@ import java.util.Set;
 /**
  * @author John Ericksen
  */
-@SupportedAnnotationTypes("*")
+@SupportedAnnotations({AnnotatedBy.class, Inject.class, Package.class, Silver.class})
 @Bootstrap
-public class SilverAnnotationProcessor extends AbstractProcessor {
+@AutoService(Processor.class)
+public class SilverAnnotationProcessor extends AnnotationProcessorBase {
 
     @Inject
     private SilverProcessor silverProcessor;
