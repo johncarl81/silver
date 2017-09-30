@@ -213,7 +213,7 @@ public class SilverWorker extends AbstractCompletionTransactionWorker<Provider<A
 
                 @Override
                 public boolean matches(ASTType input) {
-                    return input.inheritsFrom(extendsType) && !input.equals(extendsType);
+                    return input.inherits(extendsType) && !input.equals(extendsType);
                 }
             });
         }
